@@ -103,25 +103,36 @@ void print_list(const List* list)
 
 void reverse_list(List* list)
 {
+    printf("Reverse list\n");
+
 }
 
 int sum_list(const List* list)
 {
+    printf("Sum list\n");
     return 0;
 }
 
 int min_list(const List* list)
 {
+    printf("Min list\n");
     return 0;
 }
 
 int max_list(const List* list)
 {
+    printf("max list\n");
     return 0;
 }
 
 void filter_list(List* list, int threshold)
 {
+    printf("Filter list %d\n", threshold);
+}
+
+void version()
+{
+    printf("version 1.0\n");
 }
 
 void help()
@@ -160,19 +171,68 @@ bool add_to_file(const char* filename, int value)
     return true;
 }
 
+void handle_options(int argc,char* argv[], List* list)
+{
+    int value = 0;
+
+    for(int i = 2; i < argc; i++)
+    {
+        if(strcmp(argv[i], "--help") == 0)
+        {
+            help();
+        }
+        else if(strcmp(argv[i],"--version") == 0 || strcmp(argv[i],"-v") == 0)
+        {
+            version();
+        }
+        else if(strcmp(argv[i],"--reverse") == 0)
+        {
+            reverse_list(list);
+        }
+        else if(strcmp(argv[i],"--sum") == 0)
+        {
+            sum_list(list);
+        }
+        else if(strcmp(argv[i],"--min") == 0)
+        {
+            min_list(list);
+        }
+        else if(strcmp(argv[i],"--max") == 0)
+        {
+            max_list(list);
+        }
+        else if(sscanf(argv[i],"--filter%d", &value))
+        {
+            filter_list(list, value);
+        }
+        else if(sscanf(argv[i],"--add%d", &value))
+        {
+            add_to_file(argv[1], value);
+        }
+        else exit(1);
+    }
+}
+
 int main(int argc, char* argv[])
 {
     // Ne pas modifier
     init_file();
     // ---------------
+    
+    if(argc < 2) return 1;
+    FILE* f = fopen(argv[1], "r");
+    if(f == NULL) exit(2);
+    fclose(f);
 
-    //if(argc < 2) return 1;
     List list = {0};
-    read_file("data.txt", &list);
-    print_list(&list);
-    free_list(&list);
-    free_list(&list);
-    print_list(&list);
+    read_file(argv[1], &list);
+
+    if(argc == 2){
+        print_list(&list);
+    }
+    else{
+        handle_options(argc, argv, &list);
+    }
     
     return 0;
 }
