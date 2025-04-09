@@ -55,14 +55,50 @@ typedef struct
 // Fonctions de base
 void append(List* list, int value)
 {
+    if(list == NULL) exit(3);
+
+    Node* n = malloc(sizeof(Node));
+    if(n == NULL) exit(3);
+
+    n->value = value;
+    n->next = NULL;
+
+    if(list->head == NULL){
+        list->head = n;
+        list->tail = n;
+    }
+    else{
+        n->next = list->head;
+        list->head = n;
+    }
 }
 
 void free_list(List* list)
 {
+    if(list->head == NULL) return;
+
+    Node* n_tmp = list->head;
+    while(list->head != list->tail){
+        list->head = list->head->next;
+        free(n_tmp);
+        n_tmp = list->head;
+    }
+    free(list->head);
+    list->head = NULL;
+    list->tail = NULL;
 }
 
 void print_list(const List* list)
 {
+    if(list->head == NULL) return;
+
+    printf("Liste :");
+    Node* current = list->head;
+    do{
+        printf(" %d ->", current->value);
+        current = current->next;
+    }while(current != list->tail);
+    printf(" %d\n", current->value);
 }
 
 void reverse_list(List* list)
@@ -130,7 +166,13 @@ int main(int argc, char* argv[])
     init_file();
     // ---------------
 
-    if(argc < 2) return 1;
+    //if(argc < 2) return 1;
+    List list = {0};
+    read_file("data.txt", &list);
+    print_list(&list);
+    free_list(&list);
+    free_list(&list);
+    print_list(&list);
     
     return 0;
 }
